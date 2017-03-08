@@ -1,7 +1,4 @@
-conn = new Mongo();
-db = conn.getDB("antibiotic");
-
-db.antibiotic.aggregate(
+cursor = db.antibiotic.aggregate(
 	[
 		{ 
 			$group: 
@@ -24,3 +21,7 @@ db.antibiotic.aggregate(
 		}
 	]
 )
+
+while ( cursor.hasNext() ) {
+   printjson( cursor.next() );
+}
