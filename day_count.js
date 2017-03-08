@@ -1,23 +1,23 @@
-cursor = db.antibiotic.aggregate(
+cursor = collection.aggregate(
 	[
-		{ 
-			$group: 
-			{ 
-				_id : 
-				{ 
-					day : 
-					{ 
-						$dayOfYear : "$created_at" 
-					}, 
-					year : { 
+		{
+			$group:
+			{
+				_id :
+				{
+					day :
+					{
+						$dayOfYear : "$created_at"
+					},
+					year : {
 						$year : "$created_at" 
-					} 
-				}, 
-				Count : 
-				{ 
-					$sum : 1 
-				} 
-			} 
+					}
+				},
+				Count :
+				{
+					$sum : 1
+				}
+			}
 		}
 	]
 )
