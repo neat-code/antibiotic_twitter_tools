@@ -6,5 +6,5 @@ collection.find().forEach(function(element){
 })
 
 function isString (obj) {
-  return (Object.prototype.toString.call(obj) === '[object String]');
+  return typeof obj === 'string';
 }

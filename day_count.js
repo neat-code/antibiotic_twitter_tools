@@ -1,27 +1,45 @@
-cursor = collection.aggregate(
-	[
-		{
-			$group:
+
+	cursor = collection.aggregate(
+		[
 			{
-				_id :
+				$group:
 				{
-					day :
+					_id :
 					{
-						$dayOfYear : "$created_at"
+						day :
+						{
+							$cond : [
+								{ $ifNull: ["$created_at", 0]},
+								{ $dayOfMonth : "$created_at" },
+								-2000
+							]
+						},
+						month :
+						{
+							$cond :[
+								{ $ifNull : ["$created_at", 0]},
+								{ $month : "$created_at" },
+								-2000
+							]
+						},
+						year :
+						{
+							$cond : [
+								{ $ifNull : ["$created_at", 0]},
+								{ $year : "$created_at" },
+								-2000
+							]
+						}
 					},
-					year : {
-						$year : "$created_at" 
+					Count :
+					{
+						$sum : 1
 					}
-				},
-				Count :
-				{
-					$sum : 1
 				}
 			}
-		}
-	]
-)
+		]
+	)
 
-while ( cursor.hasNext() ) {
-   printjson( cursor.next() );
-}
+	while ( cursor.hasNext() ) {
+	   printjson( cursor.next() );
+	}
