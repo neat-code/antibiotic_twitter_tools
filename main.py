@@ -33,14 +33,4 @@ for item in tweet_list:
             text = item['Tweet']['TweetDTO']['text']
 
         tb = TextBlob(text)
-        scoped_list.append(SentimentResult(text, tb.sentiment, tb.noun_phrases))
-
-for item in scoped_list:
-    print("----------------")
-    print("Text:")
-    print(item.text)
-    print(":::")
-    print("Sentiment:")
-    print(item.sentiment)
-    print("Tags: ")
-    print(item.tags)
+        scoped_list.append(SentimentResult(text, tb.sentiment))
