@@ -5,6 +5,8 @@ import azure.cosmos.documents as documents
 import azure.cosmos.http_constants as http_constants
 import os
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 from textblob import TextBlob
 
 
@@ -13,7 +15,7 @@ with open('config.json') as json_data_file:
 
 client = cosmos_client.CosmosClient(url_connection = config["cosmos_url"], auth = {"masterKey": config["cosmos_key"] })
 tweet_collection = 'dbs/' + 'TwitterAnalysis' + '/colls/' + 'tweets'
-query = 'SELECT * FROM c'
+query = 'SELECT top 1000 * FROM c'
 tweet_list = []
 
 for item in client.QueryItems(tweet_collection,
@@ -49,16 +51,22 @@ df = pd.DataFrame(scoped_list)
 # All rows
 print("=== Total Rows ===")
 print("Rows: " + str(df.shape[0]))
+total_polarity_hist = df.hist(column="polarity")
 total_polarity_mean = df["polarity"].mean()
 print("Polarity mean: " + str(total_polarity_mean))
+total_subjectivity_hist = df.hist(column="subjectivity")
 total_subjectivity_mean = df["subjectivity"].mean()
 print("Subjectivity mean: " + str(total_subjectivity_mean))
 
 # Corona rows
 print("\n=== Corona Rows ===")
 print("Rows: " + str(df.loc[df["aboutCorona"]].shape[0]))
+corona_polarity = df.loc[df["aboutCorona"] == True]
+corona_polarity_hist = corona_polarity.hist(column="polarity")
 corona_polarity_mean = df.loc[df["aboutCorona"] == True]["polarity"].mean()
 print("Corona polarity mean: " + str(corona_polarity_mean))
+corona_polarity = df.loc[df["aboutCorona"] == True]
+corona_polarity_hist = corona_polarity.hist(column="subjectivity", title="test")
 corona_subjectivity_mean = df.loc[df["aboutCorona"] == True]["subjectivity"].mean()
 print("Corona subjectivity mean: " + str(corona_subjectivity_mean))
 
@@ -77,3 +85,5 @@ resistance_polarity_mean = df.loc[df["aboutVirus"] == True]["polarity"].mean()
 print("Virus polariy mean: " + str(resistance_polarity_mean))
 resistance_subjectivity_mean = df.loc[df["aboutVirus"] == True]["subjectivity"].mean()
 print("Virus subjectivity mean: " + str(resistance_subjectivity_mean))
+
+plt.show()
