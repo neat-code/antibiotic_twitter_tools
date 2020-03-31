@@ -17,7 +17,7 @@ class DataLoader(object):
 
     def load_data(self):
         tweet_collection = 'dbs/' + 'TwitterAnalysis' + '/colls/' + 'tweets'
-        query = 'SELECT top 100 * FROM c'
+        query = 'SELECT * FROM c'
         tweet_list = []
 
         for item in self.client.QueryItems(tweet_collection,
@@ -33,7 +33,9 @@ class DataLoader(object):
         scoped_list = []
         tweet_list = self.load_data()
         for item in tweet_list:
-            if item['Tweet']['IsRetweet'] is False and item['Tweet']['QuotedStatusId'] is None and item['Tweet']['InReplyToStatusId'] is None:
+            if item['Tweet']['IsRetweet'] is False and \
+            item['Tweet']['QuotedStatusId'] is None and \
+            item['Tweet']['InReplyToStatusId'] is None:
 
                 if item['Tweet']['TweetDTO']['extended_tweet'] is not None:
                     text = item['Tweet']['TweetDTO']['extended_tweet']['full_text']
@@ -47,7 +49,8 @@ class DataLoader(object):
                     "subjectivity": tb.sentiment.subjectivity,
                     "aboutVirus": ("virus" in text.lower()),
                     "aboutCorona": ("corona" in text.lower() or "covid19" in text.lower()),
-                    "aboutResistance": ("resistance" in text.lower())
+                    "aboutResistance": ("resistance" in text.lower()),
+                    "timeStamp": pd.Timestamp(item['Timestamp'])
                 }
                 scoped_list.append(result)
 
