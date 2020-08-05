@@ -8,7 +8,7 @@ import pandas as pd
 from textblob import TextBlob
 from textblob.sentiments import NaiveBayesAnalyzer
 
-class DataLoader(object):
+class SentimentAnalyzer(object):
 
     def __init__(self):
         with open('config.json') as json_data_file:
@@ -18,23 +18,24 @@ class DataLoader(object):
 
     def load_data(self):
         tweet_collection = 'dbs/' + 'TwitterAnalysis' + '/colls/' + 'tweets'
+        sentiment_collection = 'dbs/' + 'TwitterAnalysis' + '/colls/' + 'sentimentAnalysis'
         query = 'SELECT * FROM c'
-        tweet_list = []
 
         for item in self.client.QueryItems(tweet_collection,
                                       query,
                                       {'enableCrossPartitionQuery': True}
                                       ):
-            tweet_list.append(dict(item))
+              result = self.format_data(item)
+              if result is not None:
+                  print(result)
+                  self.client.UpsertItem(sentiment_collection, self.format_data(item))
+                  print("Item upserted")
 
-        return tweet_list
 
 
-    def format_data(self):
-        counter = 0
-        scoped_list = []
-        tweet_list = self.load_data()
-        for item in tweet_list:
+
+
+    def format_data(self, item):
             if item['Tweet']['IsRetweet'] is False and \
             item['Tweet']['QuotedStatusId'] is None and \
             item['Tweet']['InReplyToStatusId'] is None:
@@ -45,9 +46,9 @@ class DataLoader(object):
                     text = item['Tweet']['TweetDTO']['text']
 
                 tb = TextBlob(text, analyzer=NaiveBayesAnalyzer())
-                counter = counter + 1
-                print(str(counter) + " out of " + str(len(tweet_list)))
-                result = {
+                return {
+                    "id": item['id'],
+                    "PartitionKey": item['PartitionKey'],
                     "text": text,
                     "sentiment_classification": tb.sentiment.classification,
                     "sentiment_pos": tb.sentiment.p_pos,
@@ -56,9 +57,5 @@ class DataLoader(object):
                     "aboutVirus": ("virus" in text.lower()),
                     "aboutCorona": ("corona" in text.lower() or "covid19" in text.lower()),
                     "aboutResistance": ("resistance" in text.lower()),
-                    "timeStamp": pd.Timestamp(item['Timestamp'])
+                    "timeStamp": item['Timestamp']
                 }
-                scoped_list.append(result)
-
-
-        return pd.DataFrame(scoped_list)

@@ -4,8 +4,8 @@ import matplotlib.dates as mdates
 import pandas as pd
 
 def update_timechart(dataframe, figure_number, title):
-    plt.plot(dataframe.groupby([dataframe['timeStamp'].dt.date])['polarity'].mean(), color="r", label="Polarity", markevery=5)
-    plt.plot(dataframe.groupby([dataframe['timeStamp'].dt.date])['subjectivity'].mean(), color="b", label="Subjectivity", markevery=5)
+    plt.plot(dataframe.groupby([dataframe['timeStamp'].dt.date])['sentiment_pos'].mean(), color="b", label="Positivity", markevery=5)
+    plt.plot(dataframe.groupby([dataframe['timeStamp'].dt.date])['sentiment_neg'].mean(), color="r", label="Negativity", markevery=5)
     plt.title(title)
     plt.legend()
     plt.show()
@@ -19,7 +19,7 @@ update_timechart(df, 1, "Total")
 update_timechart(df.loc[df["aboutCorona"]], 2, "Corona")
 # Resistance Rows
 update_timechart(df.loc[df["aboutResistance"]], 3, "Resistance")
-# Virus Rows
+# Virus Rowspy
 update_timechart(df.loc[df["aboutVirus"]], 4, "Virus")
 
 plt.show()
